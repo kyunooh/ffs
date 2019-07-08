@@ -15,32 +15,44 @@ class UsersTableViewController: UITableViewController {
     var userList: UserList = UserList()
     var username: String?
     
+    @IBOutlet weak var backButton: UIBarButtonItem!
+
+    @IBAction func back(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        backButton.isEnabled = self.username != nil
         let username = self.username ?? "kyunooh"
-
-        Alamofire.request(createFollowersUrl(username: username)).responseJSON { response in
+        let headers: HTTPHeaders = [:]
+        self.title = username
+        
+        Alamofire.request(createFollowersUrl(username: username), headers: headers).responseJSON { response in
             switch response.result {
             case .success(_):
                 //to get JSON return value
                 if let result = response.result.value {
                     let json = result as! [[String: Any]]
                     //then use guard to get the value your want
-                    for u in json {
+                    for (i, u) in json.enumerated() {
                         let user = User()
+                        let row = i
                         user.username = u["login"] as! String
                         user.profileImageUrl = u["avatar_url"] as! String
                         self.userList.userList.append(user)
-                        Alamofire.request(self.createUserUrl(username: user.username)).responseJSON { response in
-                            if let result = response.result.value as? [String: Any]{
-                                user.followerCount = result["followers"] as! Int
-                                self.tableView.reloadData()
+                        self.tableView.insertRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
+                        Alamofire.request(self.createUserUrl(username: user.username), headers: headers).responseJSON { response in
+                            if let result = response.result.value as? [String: Any] {
+                                user.followerCount = result["followers"] as? Int ?? 0
+                                if let cell = self.tableView.cellForRow(at: IndexPath.init(row: row, section: 0)) as? UserTableViewCell {
+                                    cell.followerCountLabel.text = String(user.followerCount)
+                                }
+                                
                             }
                         }
                     }
-                    
-                    self.tableView.reloadData()
                 }
             case .failure(_): break
                 
@@ -76,6 +88,7 @@ class UsersTableViewController: UITableViewController {
         if segue.identifier == "UserListSegue" {
             if let cell = sender as? UserTableViewCell,
                 let destination = segue.destination as? UsersTableViewController {
+                
                 destination.username = cell.usernameLabel.text
             }
         }
@@ -96,7 +109,5 @@ class UsersTableViewController: UITableViewController {
             }
         }
     }
-    
-    
 }
 
