@@ -1,20 +1,27 @@
 PODS:
   - Alamofire (4.8.2)
+  - PromiseKit/Alamofire (6.9.0):
+    - Alamofire (~> 4.0)
+    - PromiseKit/CorePromise
+  - PromiseKit/CorePromise (6.9.0)
   - SwiftyJSON (4.3.0)
 
 DEPENDENCIES:
   - Alamofire (~> 4.7)
+  - PromiseKit/Alamofire (~> 6.0)
   - SwiftyJSON (~> 4.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
+    - PromiseKit
     - SwiftyJSON
 
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
+  PromiseKit: 97397236f9e9c443d5b70a941d49cad25160af7a
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
-PODFILE CHECKSUM: 47ce74f0b1ad7e0547e2f83b5dca58e6592a2406
+PODFILE CHECKSUM: a1973c901df6f0ca5ccf466b982e94b54c3cf442
 
 COCOAPODS: 1.7.2

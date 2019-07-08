@@ -7,16 +7,19 @@
 //
 
 import UIKit
+import PromiseKit
 import SwiftyJSON
 import Alamofire
 
 class UsersTableViewController: UITableViewController {
     
-    var userList: UserList = UserList()
+    var userList: [User] = []
     var username: String?
-    
-    @IBOutlet weak var backButton: UIBarButtonItem!
+    let headers: HTTPHeaders = [            :
+]
 
+    @IBOutlet weak var backButton: UIBarButtonItem!
+    
     @IBAction func back(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
@@ -25,59 +28,72 @@ class UsersTableViewController: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         backButton.isEnabled = self.username != nil
+        
         let username = self.username ?? "kyunooh"
-        let headers: HTTPHeaders = [:]
         self.title = username
         
-        Alamofire.request(createFollowersUrl(username: username), headers: headers).responseJSON { response in
-            switch response.result {
-            case .success(_):
-                //to get JSON return value
-                if let result = response.result.value {
-                    let json = result as! [[String: Any]]
-                    //then use guard to get the value your want
-                    for (i, u) in json.enumerated() {
-                        let user = User()
-                        let row = i
-                        user.username = u["login"] as! String
-                        user.profileImageUrl = u["avatar_url"] as! String
-                        self.userList.userList.append(user)
-                        self.tableView.insertRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
-                        Alamofire.request(self.createUserUrl(username: user.username), headers: headers).responseJSON { response in
-                            if let result = response.result.value as? [String: Any] {
-                                user.followerCount = result["followers"] as? Int ?? 0
-                                if let cell = self.tableView.cellForRow(at: IndexPath.init(row: row, section: 0)) as? UserTableViewCell {
-                                    cell.followerCountLabel.text = String(user.followerCount)
-                                }
-                                
-                            }
-                        }
-                    }
-                }
-            case .failure(_): break
-                
+        firstly {
+            Alamofire
+                .request(createFollowersUrl(username: username), headers: headers)
+                .responseDecodable([User].self)
+        }.done { users in
+            //to get JSON return value
+            self.userList = users
+            self.tableView.reloadData()
+            //then use guard to get the value your want
+            for (i, user) in users.enumerated() {
+                let row = i
+                self.setFollowerCount(row: row, user: user)
             }
+        }.catch { error in
+            print(error)
         }
+        
+
     }
     
     func createFollowersUrl(username: String) -> URL {
         return URL(string: "https://api.github.com/users/\(username)/followers")!
     }
+
+    func setFollowerCount(row: Int, user: User) {
+        firstly {
+            Alamofire
+                .request(self.createUserUrl(username: user.username!), headers: headers)
+                .responseDecodable(User.self)
+        }.done { responseUser in
+            print(responseUser.followerCount)
+            print(row)
+            print(self.tableView.cellForRow(at: IndexPath(row: row, section: 0)))
+            if let cell = self.tableView.cellForRow(at: IndexPath(row: row, section: 0)) as? UITableViewCell {
+                self.userList[row].followerCount = responseUser.followerCount!
+                configureCell(for: cell, with: self.userList[row])
+            }
+        }.catch { error in
+            print(error)
+        }
+    }
+    
+    func configureFollowerCount(for cell: UITableViewCell, with user: User) {
+        if let cell = cell as? UserTableViewCell {
+            cell.followerCountLabel.text = String(user.followerCount!)
+        }
+    }
+    
     func createUserUrl(username: String) -> URL {
         return URL(string: "https://api.github.com/users/\(username)")!
     }
     
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return userList.userList.count
+        return userList.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath)
-        let user = userList.userList[indexPath.row]
+        let user = userList[indexPath.row]
         configureCell(for: cell, with: user)
         return cell
-        
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -88,7 +104,6 @@ class UsersTableViewController: UITableViewController {
         if segue.identifier == "UserListSegue" {
             if let cell = sender as? UserTableViewCell,
                 let destination = segue.destination as? UsersTableViewController {
-                
                 destination.username = cell.usernameLabel.text
             }
         }
@@ -98,8 +113,8 @@ class UsersTableViewController: UITableViewController {
     func configureCell(for cell: UITableViewCell, with user: User) {
         if let cell = cell as? UserTableViewCell {
             cell.usernameLabel.text = user.username
-            cell.followerCountLabel.text = String(user.followerCount)
-            if let url = URL(string: user.profileImageUrl) {
+            cell.followerCountLabel.text = "0"
+            if let url = URL(string: user.profileImageUrl!) {
                 do {
                     let data = try Data(contentsOf: url)
                     cell.profileImageView.image = UIImage(data: data)

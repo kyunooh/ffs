@@ -16,7 +16,6 @@
 		A1484EB522D34E6A00BC2D77 /* ffsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1484EB422D34E6A00BC2D77 /* ffsTests.swift */; };
 		A1484EC022D34E6A00BC2D77 /* ffsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1484EBF22D34E6A00BC2D77 /* ffsUITests.swift */; };
 		A1484ED022D351A600BC2D77 /* UserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1484ECF22D351A600BC2D77 /* UserTableViewCell.swift */; };
-		A1A7183E22D355D60011B500 /* UserList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A7183D22D355D60011B500 /* UserList.swift */; };
 		A1A7184022D355E80011B500 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A7183F22D355E80011B500 /* User.swift */; };
 /* End PBXBuildFile section */
 
@@ -54,7 +53,6 @@
 		A1484EBF22D34E6A00BC2D77 /* ffsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ffsUITests.swift; sourceTree = "<group>"; };
 		A1484EC122D34E6A00BC2D77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1484ECF22D351A600BC2D77 /* UserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTableViewCell.swift; sourceTree = "<group>"; };
-		A1A7183D22D355D60011B500 /* UserList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserList.swift; sourceTree = "<group>"; };
 		A1A7183F22D355E80011B500 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		B1C83AEC2A964ABDB71245C7 /* Pods-ffs.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ffs.debug.xcconfig"; path = "Target Support Files/Pods-ffs/Pods-ffs.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -160,7 +158,6 @@
 		A1484ECD22D3517500BC2D77 /* models */ = {
 			isa = PBXGroup;
 			children = (
-				A1A7183D22D355D60011B500 /* UserList.swift */,
 				A1A7183F22D355E80011B500 /* User.swift */,
 			);
 			path = models;
@@ -349,7 +346,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1A7183E22D355D60011B500 /* UserList.swift in Sources */,
 				A1484EA222D34E6800BC2D77 /* UsersTableViewController.swift in Sources */,
 				A1484ED022D351A600BC2D77 /* UserTableViewCell.swift in Sources */,
 				A1A7184022D355E80011B500 /* User.swift in Sources */,
