@@ -19,7 +19,6 @@ class UsersTableViewController: UITableViewController {
         guard let url = URL(string: "https://api.github.com/users/kyunooh/followers") else {
             return
         }
-        
         Alamofire.request(url).responseJSON { response in
             switch response.result {
             case .success( _):
@@ -35,14 +34,13 @@ class UsersTableViewController: UITableViewController {
 
                     self.tableView.reloadData()
                 }
-            case .failure(let error): break
+            case .failure(_): break
                 
                 
             }
             
         }
         
-        userList = UserList()
     }
     
     
