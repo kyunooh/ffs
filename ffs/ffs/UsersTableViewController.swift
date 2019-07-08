@@ -11,29 +11,41 @@ import SwiftyJSON
 import Alamofire
 
 class UsersTableViewController: UITableViewController {
-
+    
     var userList: UserList = UserList()
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         guard let url = URL(string: "https://api.github.com/users/kyunooh/followers") else {
+            return
         }
         
-        Alamofire.request(method: .GET, "https://api.github.com/users/kyunooh/followers").responseJSON { (req, res, json) -> Void in
-            let swiftyJsonVar = JSON(json)
-            
-            if let resData = swiftyJsonVar["contacts"].arrayObject {
-                self.arrRes = resData as! [[String:AnyObject]]
-            }
-            if self.arrRes.count > 0 {
-                self.tblJSON.reloadData()
-            }
-        }
+        Alamofire.request(url).responseJSON { response in
+            switch response.result {
+            case .success( _):
+                //to get JSON return value
+                if let result = response.result.value {
+                    let json = result as! [[String: Any]]
+                    //then use guard to get the value your want
+                    for u in json {
+                        let user = User()
+                        user.username = u["login"] as! String
+                        self.userList.userList.append(user)
+                    }
 
+                    self.tableView.reloadData()
+                }
+            case .failure(let error): break
+                
+                
+            }
+            
+        }
+        
         userList = UserList()
     }
-
-
+    
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return userList.userList.count
     }
