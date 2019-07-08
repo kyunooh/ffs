@@ -55,6 +55,7 @@
                                     <outlet property="followerCountLabel" destination="yLd-iO-VoC" id="W3N-9a-fSO"/>
                                     <outlet property="profileImageView" destination="Rmm-zq-VA7" id="2Lf-4m-Qdw"/>
                                     <outlet property="usernameLabel" destination="GB0-5w-tae" id="DY5-cS-chW"/>
+                                    <segue destination="Gy1-Mt-JGE" kind="show" identifier="UserListSegue" id="BTh-WK-bXE"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>

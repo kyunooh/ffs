@@ -13,15 +13,16 @@ import Alamofire
 class UsersTableViewController: UITableViewController {
     
     var userList: UserList = UserList()
+    var username: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        guard let url = URL(string: "https://api.github.com/users/kyunooh/followers") else {
-            return
-        }
-        Alamofire.request(url).responseJSON { response in
+        let username = self.username ?? "kyunooh"
+
+        Alamofire.request(createFollowersUrl(username: username)).responseJSON { response in
             switch response.result {
-            case .success( _):
+            case .success(_):
                 //to get JSON return value
                 if let result = response.result.value {
                     let json = result as! [[String: Any]]
@@ -29,18 +30,29 @@ class UsersTableViewController: UITableViewController {
                     for u in json {
                         let user = User()
                         user.username = u["login"] as! String
+                        user.profileImageUrl = u["avatar_url"] as! String
                         self.userList.userList.append(user)
+                        Alamofire.request(self.createUserUrl(username: user.username)).responseJSON { response in
+                            if let result = response.result.value as? [String: Any]{
+                                user.followerCount = result["followers"] as! Int
+                                self.tableView.reloadData()
+                            }
+                        }
                     }
-
+                    
                     self.tableView.reloadData()
                 }
             case .failure(_): break
                 
-                
             }
-            
         }
-        
+    }
+    
+    func createFollowersUrl(username: String) -> URL {
+        return URL(string: "https://api.github.com/users/\(username)/followers")!
+    }
+    func createUserUrl(username: String) -> URL {
+        return URL(string: "https://api.github.com/users/\(username)")!
     }
     
     
@@ -60,10 +72,28 @@ class UsersTableViewController: UITableViewController {
         return 500
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "UserListSegue" {
+            if let cell = sender as? UserTableViewCell,
+                let destination = segue.destination as? UsersTableViewController {
+                destination.username = cell.usernameLabel.text
+            }
+        }
+    }
+    
+    
     func configureCell(for cell: UITableViewCell, with user: User) {
         if let cell = cell as? UserTableViewCell {
             cell.usernameLabel.text = user.username
             cell.followerCountLabel.text = String(user.followerCount)
+            if let url = URL(string: user.profileImageUrl) {
+                do {
+                    let data = try Data(contentsOf: url)
+                    cell.profileImageView.image = UIImage(data: data)
+                } catch {
+                    print(error)
+                }
+            }
         }
     }
     
