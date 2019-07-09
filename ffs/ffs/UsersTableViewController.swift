@@ -62,12 +62,9 @@ class UsersTableViewController: UITableViewController {
                 .request(self.createUserUrl(username: user.username!), headers: headers)
                 .responseDecodable(User.self)
         }.done { responseUser in
-            print(responseUser.followerCount)
-            print(row)
-            print(self.tableView.cellForRow(at: IndexPath(row: row, section: 0)))
-            if let cell = self.tableView.cellForRow(at: IndexPath(row: row, section: 0)) as? UITableViewCell {
+            if let cell = self.tableView.cellForRow(at: IndexPath(row: row, section: 0)) {
                 self.userList[row].followerCount = responseUser.followerCount!
-                configureCell(for: cell, with: self.userList[row])
+                self.configureCell(for: cell, with: self.userList[row])
             }
         }.catch { error in
             print(error)
@@ -113,7 +110,7 @@ class UsersTableViewController: UITableViewController {
     func configureCell(for cell: UITableViewCell, with user: User) {
         if let cell = cell as? UserTableViewCell {
             cell.usernameLabel.text = user.username
-            cell.followerCountLabel.text = "0"
+            cell.followerCountLabel.text = String(user.followerCount ?? 0)
             if let url = URL(string: user.profileImageUrl!) {
                 do {
                     let data = try Data(contentsOf: url)

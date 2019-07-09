@@ -9,9 +9,9 @@
 import Foundation
 
 class User: Codable {
-    var username: String?
-    var followerCount: Int?
-    var profileImageUrl: String?
+    var username: String? = ""
+    var followerCount: Int? = 0
+    var profileImageUrl: String? = ""
     
     enum CodingKeys: String, CodingKey {
         case username = "login", profileImageUrl = "avatar_url", followerCount = "followers"
